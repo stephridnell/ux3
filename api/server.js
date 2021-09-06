@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
   res.send('homepageee')
 })
 
+// user
+app.use('/user', require('./routes/user'))
+
 // run app (listen on port)
 app.listen(port, () => {
   console.log(`app is listening on port ${port}`)
