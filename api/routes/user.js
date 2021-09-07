@@ -1,9 +1,15 @@
 const express = require('express')
 const router = express.Router()
+const User = require('./../models/User')
 
-// GET
-router.get('/', (req, res) => {
-  res.json([{ name: 'im a user' }])
+// GET all users
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find()
+    res.json(users)
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
 })
 
 // router.post('/', (req, res) => {
