@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id
-  const notFoundMsg = `User with ID ${id} not found`
+  const notFoundMsg = `User does not exist`
 
   try {
     const user = await User.findById(id)
