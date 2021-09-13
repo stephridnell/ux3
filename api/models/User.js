@@ -37,7 +37,7 @@ const schema = new Schema({
 schema.path('email').validate(async (value) => {
   const emailCount = await mongoose.models.User.countDocuments({ email: value })
   return !emailCount
-}, 'Email already exists');
+}, 'User with this email already exists')
 
 // hash password (middleware)
 schema.pre('save', function (next) {
