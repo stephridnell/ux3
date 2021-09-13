@@ -1,5 +1,7 @@
 // dependencies
-let crypto = require('crypto')
+require('dotenv').config()
+const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
 
 // Utils class
 class Utils {
@@ -14,6 +16,14 @@ class Utils {
     const salt = original.split('$')[0]
     const hash = crypto.pbkdf2Sync(password, salt, 2048, 32, 'sha512').toString('hex')
     return hash === originalHash
+  }
+
+  generateAccessToken (user) {
+    return jwt.sign(
+      { user },
+      process.env.JWT_SECRET,
+      { expiresIn: '30min' }
+    )
   }
 }
 
