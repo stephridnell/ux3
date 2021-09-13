@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken')
 router.post('/signin', async ({ body }, res) => {
   // validate email and password
   if (!body.email || !body.password) {
+    console.log('Email or password not provided')
     return res.status(400).json({
       message: 'Must provide email and password'
     })
@@ -26,6 +27,7 @@ router.post('/signin', async ({ body }, res) => {
       email: body.email
     })
   } catch (error) {
+    console.log('Error finding the user on signin', err.message)
     return res.status(500).json({
       message: 'Error signing in',
       error
@@ -47,7 +49,8 @@ router.post('/signin', async ({ body }, res) => {
   // or the password is incorrect. we do not tell the user specifically
   // which one because we do not want to let malicious users know what
   // emails are in the db
-  return res.status(401).json({
+    console.log('Incorrect username or password sent on signin')
+    return res.status(401).json({
     message: 'Incorrect username or password'
   })
 })
@@ -59,7 +62,8 @@ router.get('/validate', (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, tokenData) => {
     if (err) {
       // if there is an error in the verify callback, return a 403
-      return res.sendStatus(403)
+    console.log('Error validating jwt', err.message)
+    return res.sendStatus(403)
     }
     // send user object/token exp to the user
     res.json(tokenData)

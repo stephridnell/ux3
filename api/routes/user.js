@@ -10,6 +10,7 @@ router.get('/', async (_req, res) => {
     const users = await User.find()
     res.json(users)
   } catch (error) {
+    console.log('Error finding users', error.message)
     res.status(500).json({
       message: 'Error finding Users',
       error
@@ -23,7 +24,8 @@ router.get('/:id', async ({ params }, res) => {
     const user = await User.findById(params.id)
     if (!user) {
       // if user does not exist then return a 404 error
-      return res.status(404).json({
+    console.log(`User with ID ${params.id} does not exist`)
+    return res.status(404).json({
         message: 'User does not exist'
       })
     }
@@ -41,6 +43,7 @@ router.post('/', async ({ body }, res) => {
   // using lodash isEmpty because if the body is empty it will
   // likely still be an empty object which is ofc truthy
   if (!body || isEmpty(body)) {
+    console.log('New user request body empty')
     return res.status(400).json({
       message: 'Request body is empty'
     })
@@ -58,6 +61,9 @@ router.post('/', async ({ body }, res) => {
     const savedUser = await newUser.save()
     res.status(201).json(savedUser)
   } catch (error) {
+    // putting the payload in the console log here so if it needed to
+    // be debugged there's more info
+    console.log('Error creating a new user', error.message, body)
     res.status(500).json({
       message: 'Error creating User',
       error
@@ -70,6 +76,7 @@ router.put('/:id', async ({ params, body }, res) => {
   // using lodash isEmpty because if the body is empty it will
   // likely still be an empty object which is ofc truthy
   if (!body || isEmpty(body)) {
+    console.log('Update a user request body is empty')
     return res.status(400).json({
       message: 'Request body is empty'
     })
@@ -83,6 +90,7 @@ router.put('/:id', async ({ params, body }, res) => {
   // in multiple areas but i did it anyway)
   let emailCount = await User.countDocuments({ _id: { $ne: params.id }, email: body.email })
   if (emailCount) {
+    console.log('User tried to update their email to one of another existing account')
     return res.status(409).json({
       message: 'User with this email already exists'
     })
@@ -94,12 +102,14 @@ router.put('/:id', async ({ params, body }, res) => {
     // wrapper for findOneAndUpdate)
     const user = await User.findByIdAndUpdate(params.id, body, { new: true })
     if (!user) {
-      return res.status(404).json({
+    console.log('Call to update a user that does not exist')
+    return res.status(404).json({
         message: 'User does not exist'
       })
     }
     res.json(user)
   } catch (error) {
+    console.log('Error updating user', error.message, body)
     res.status(500).json({
       message: 'Error updating User',
       error
@@ -118,6 +128,7 @@ router.delete('/:id', async ({ params }, res) => {
       message: 'User deleted'
     })
   } catch (error) {
+    console.log('Error while trying to delete user', error.message)
     res.status(500).json({
       message: 'Error deleting User',
       error
