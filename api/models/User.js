@@ -20,6 +20,10 @@ const schema = new Schema({
     type: Number,
     required: true
   },
+  bio: {
+    type: String,
+    required: true
+  },
   password: {
     type: String,
     required: true
