@@ -64,6 +64,9 @@ router.put('/:id', async ({ params, body }, res) => {
     })
   }
 
+  // check for email field conflict with other users
+  // _id NOT EQUALS the one from the request params
+  // because we are looking for conflicts within other users
   let emailCount = await User.countDocuments({ _id: { $ne: params.id }, email: body.email })
   if (emailCount) {
     return res.status(409).json({
