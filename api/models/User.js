@@ -33,6 +33,12 @@ const schema = new Schema({
   timestamps: true
 })
 
+// make sure email is unique when creating a new user
+schema.path('email').validate(async (value) => {
+  const emailCount = await mongoose.models.User.countDocuments({ email: value })
+  return !emailCount
+}, 'Email already exists');
+
 // hash password (middleware)
 schema.pre('save', function (next) {
   // check if password is present and is modified
