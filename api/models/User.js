@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
 require('mongoose-type-email')
-const Utils = require('./../Utils')
+const Utils = require('../Utils')
 
 const schema = new Schema({
   firstName: {
@@ -39,16 +39,24 @@ schema.path('email').validate(async (value) => {
   return !emailCount
 }, 'User with this email already exists')
 
-// hash password (middleware)
+// hash password on new account (middleware)
 schema.pre('save', function (next) {
-  // check if password is present and is modified
-  if (this.password && this.isModified()) {
-    // replace original password with new hashed password
-    this.password = Utils.hashPassword(this.password)
-  }
-  // continue
-  next()
+  hashPassword(next, this)
 })
+
+// hash password on updating an existing account (middleware)
+schema.pre('findOneAndUpdate', function (next) {
+  hashPassword(next, this._update)
+})
+
+function hashPassword (next, self) {
+  // check if password is present (should not be present if not modified)
+  if (self.password) {
+    // replace original password with new hashed password
+    self.password = Utils.hashPassword(self.password)
+  }
+  next()
+}
 
 const model = mongoose.model('User', schema)
 
