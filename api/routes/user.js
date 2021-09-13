@@ -64,6 +64,13 @@ router.put('/:id', async ({ params, body }, res) => {
     })
   }
 
+  let emailCount = await User.countDocuments({ _id: { $ne: params.id }, email: body.email })
+  if (emailCount) {
+    return res.status(409).json({
+      message: 'User with this email already exists'
+    })
+  }
+
   try {
     const user = await User.findByIdAndUpdate(params.id, body, { new: true })
     if (!user) {
