@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('./../models/User')
+const isEmpty = require('lodash/isEmpty')
 
 // GET all users
 router.get('/', async (req, res) => {
@@ -35,7 +36,7 @@ router.get('/:id', async ({ params }, res) => {
 })
 
 router.post('/', async ({ body }, res) => {
-  if (!body) {
+  if (!body || isEmpty(body)) {
     return res.status(400).json({
       message: 'Request body is empty'
     })
@@ -58,7 +59,7 @@ router.post('/', async ({ body }, res) => {
 
 router.put('/:id', async ({ params, body }, res) => {
   const id = params.id
-  if (!body) {
+  if (!body || isEmpty(body)) {
     return res.status(400).json({
       message: 'Request body is empty'
     })
