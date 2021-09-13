@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/:id', async (req, res) => {
-  const id = req.params.id
+router.get('/:id', async ({ params }, res) => {
+  const id = params.id
 
   try {
     const user = await User.findById(id)
@@ -34,15 +34,15 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.post('/', async (req, res) => {
-  if (!req.body) {
+router.post('/', async ({ body }, res) => {
+  if (!body) {
     return res.status(400).json({
       message: 'Request body is empty'
     })
   }
 
   const newUser = new User({
-    ...req.body
+    ...body
   })
 
   try {
@@ -54,6 +54,31 @@ router.post('/', async (req, res) => {
       error
     })
   }
+})
+
+router.put('/:id', async ({ params, body }, res) => {
+  const id = params.id
+  if (!body) {
+    return res.status(400).json({
+      message: 'Request body is empty'
+    })
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(id, body, { new: true })
+    if (!user) {
+      return res.status(404).json({
+        message: 'User does not exist'
+      })
+    }
+    res.json(user)
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error updating User',
+      error
+    })
+  }
+
 })
 
 module.exports = router
