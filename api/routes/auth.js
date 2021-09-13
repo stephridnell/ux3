@@ -1,8 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const Utils = require('../Utils')
 const User = require('../models/User')
 const router = express.Router()
 const omit = require('lodash/omit')
+const jwt = require('jsonwebtoken')
 
 // POST /auth/signin
 router.post('/signin', async ({ body }, res) => {
@@ -48,7 +50,13 @@ router.post('/signin', async ({ body }, res) => {
 
 // /auth/validate
 router.get('/validate', (req, res) => {
-  res.send('Auth > validate')
+  const token = req.headers['authorization'].split(' ')[1]
+  jwt.verify(token, process.env.JWT_SECRET, (err, tokenData) => {
+    if (err) {
+      return res.sendStatus(403)
+    }
+    res.json(tokenData)
+  })
 })
 
 module.exports = router
