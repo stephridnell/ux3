@@ -1,3 +1,4 @@
+// dependencies
 require('dotenv').config()
 const express = require('express')
 const Utils = require('../Utils')
@@ -15,6 +16,8 @@ router.post('/signin', async ({ body }, res) => {
     })
   }
 
+  // declare user outside the try catch because I don't want all my code
+  // wrapped in there
   let user
 
   // get user
@@ -24,13 +27,14 @@ router.post('/signin', async ({ body }, res) => {
     })
   } catch (error) {
     return res.status(500).json({
-      message: 'Error getting user',
+      message: 'Error signing in',
       error
     })
   }
 
   // check that a user was found and that the password is correct
   if (user && Utils.verifyPassword(body.password, user.password)) {
+    // omit the password from the user object before putting it into the token
     const userObj = omit(user, ['password'])
     const token = Utils.generateAccessToken(userObj)
     return res.json({
@@ -50,11 +54,14 @@ router.post('/signin', async ({ body }, res) => {
 
 // /auth/validate
 router.get('/validate', (req, res) => {
+  // split the auth header string by space and take the second substring as the jwt
   const token = req.headers['authorization'].split(' ')[1]
   jwt.verify(token, process.env.JWT_SECRET, (err, tokenData) => {
     if (err) {
+      // if there is an error in the verify callback, return a 403
       return res.sendStatus(403)
     }
+    // send user object/token exp to the user
     res.json(tokenData)
   })
 })

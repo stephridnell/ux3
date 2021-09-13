@@ -1,8 +1,10 @@
+// dependencies
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
 require('mongoose-type-email')
 const Utils = require('../Utils')
 
+// define the schema for a user
 const schema = new Schema({
   firstName: {
     type: String,

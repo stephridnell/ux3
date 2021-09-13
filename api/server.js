@@ -20,8 +20,10 @@ app.get('/', (req, res) => {
   res.send('homepageee')
 })
 
-// user
+// user routes
 app.use('/user', require('./routes/user'))
+
+// auth routes
 app.use('/auth', require('./routes/auth'))
 
 // run app (listen on port)
@@ -29,6 +31,8 @@ app.listen(port, () => {
   console.log(`app is listening on port ${port}`)
 })
 
+// i prefer to use async/await syntax so i created an async function
+// for connecting the database
 async function connectDatabase () {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
